@@ -360,6 +360,21 @@ func (r *ReconcileScaledObject) newHPAForScaledObject(logger logr.Logger, scaled
 		return nil, err
 	}
 
+	var kind string
+	var apiVersion string
+
+	if scaledObject.Spec.ScaleTargetRef.Kind != "" {
+		kind = scaledObject.Spec.ScaleTargetRef.Kind
+	} else {
+		kind = "Deployment"
+	}
+
+	if scaledObject.Spec.ScaleTargetRef.APIVersion != "" {
+		apiVersion = scaledObject.Spec.ScaleTargetRef.APIVersion
+	} else {
+		apiVersion = "apps/v1"
+	}
+
 	return &autoscalingv2beta1.HorizontalPodAutoscaler{
 		Spec: autoscalingv2beta1.HorizontalPodAutoscalerSpec{
 			MinReplicas: getHpaMinReplicas(scaledObject),
@@ -367,8 +382,8 @@ func (r *ReconcileScaledObject) newHPAForScaledObject(logger logr.Logger, scaled
 			Metrics:     scaledObjectMetricSpecs,
 			ScaleTargetRef: autoscalingv2beta1.CrossVersionObjectReference{
 				Name:       deploymentName,
-				Kind:       "Deployment",
-				APIVersion: "apps/v1",
+				Kind:       kind,
+				APIVersion: apiVersion,
 			}},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      getHpaName(deploymentName),

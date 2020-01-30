@@ -60,6 +60,10 @@ type ScaledObjectSpec struct {
 type ObjectReference struct {
 	DeploymentName string `json:"deploymentName"`
 	// +optional
+	Kind string `json:"kind,omitempty"`
+    // +optional
+    APIVersion string `json:"apiVersion,omitempty"`
+	// +optional
 	ContainerName string `json:"containerName,omitempty"`
 }
 
